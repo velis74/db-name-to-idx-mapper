@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "db-name-to-idx-mapper"
+version = "0.1.0"
+description = "Cross-platform utility for mapping database names to sequential indices"
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text = "MIT" }
+authors = [
+    { name = "Velis d.o.o.", email = "support@velis.si" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Database",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+]
+
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/velis74/db-name-to-idx-mapper"
+Repository = "https://github.com/velis74/db-name-to-idx-mapper"
+"Bug Tracker" = "https://github.com/velis74/db-name-to-idx-mapper/issues"
+
+[project.scripts]
+db-name-to-idx-mapper = "db_name_to_idx_mapper:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["db_name_to_idx_mapper"]
+
+[tool.hatch.version]
+path = "db_name_to_idx_mapper/__init__.py"
+
+[tool.ruff]
+exclude = [
+    'docs', 'scripts', 'README.md', 'LICENSE', 'MANIFEST.in',
+    'pyproject.toml', '.gitignore', '.git', '.idea', '.ruff'
+]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+ignore = ["E731", "E722"]
+fixable = ["ALL"]
+unfixable = []
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+case-sensitive = false
+lines-between-types = 1
+combine-as-imports = true
+order-by-type = false
+known-local-folder = []
