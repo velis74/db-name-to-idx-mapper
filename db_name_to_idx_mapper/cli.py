@@ -11,6 +11,8 @@ from .db_name_to_idx_mapper import DbNameToIdxMapper
 from .config_path import resolve_config_path, get_help_text
 
 def main():
+    from . import __version__
+
     parser = argparse.ArgumentParser(
         description="Database name to index mapper",
         prog="db-name-to-idx-mapper",
@@ -20,6 +22,12 @@ def main():
         "--config-path",
         default="{CONFIG}/db-name-to-idx-mapper/config.json",
         help=get_help_text(),
+    )
+    parser.add_argument(
+        "--version",
+        help="Prints version information and exits.",
+        action="version",
+        version=__version__
     )
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
