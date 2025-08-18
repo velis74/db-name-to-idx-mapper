@@ -4,7 +4,6 @@ build-backend = "hatchling.build"
 
 [project]
 name = "db-name-to-idx-mapper"
-version = "0.1.0"
 description = "Cross-platform utility for mapping database names to sequential indices"
 readme = "README.md"
 requires-python = ">=3.7"
