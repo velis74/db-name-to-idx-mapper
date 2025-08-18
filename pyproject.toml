@@ -8,6 +8,7 @@ description = "Cross-platform utility for mapping database names to sequential i
 readme = "README.md"
 requires-python = ">=3.7"
 license = { text = "MIT" }
+dynamic = ["version"]
 authors = [
     { name = "Velis d.o.o.", email = "support@velis.si" },
 ]

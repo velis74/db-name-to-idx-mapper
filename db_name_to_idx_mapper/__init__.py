@@ -1,5 +1,5 @@
 __title__ = "DB name to idx mapper"
-__version__ = "1.0.1-alpha"
+__version__ = "1.0.2-alpha"
 __author__ = "Velis d.o.o."
 __email__ = "support@velis.si"
 __license__ = "MIT"
