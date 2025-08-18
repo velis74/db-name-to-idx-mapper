@@ -58,6 +58,16 @@ db-name-to-idx-mapper add-utility-db-param-map redis-benchmark -select
 # Get utility parameter
 db-name-to-idx-mapper get-utility-db-param redis-cli
 # Output: -n
+
+# Execute utility with database mapping
+db-name-to-idx-mapper exec redis-cli -n myapp.cache GET somekey
+# Executes: redis-cli -n 0 GET somekey
+
+# Execute for multiple databases with prefix
+db-name-to-idx-mapper exec redis-cli -n myapp KEYS *
+# Executes: redis-cli -n 0 KEYS *
+#           redis-cli -n 1 KEYS *
+# (for all databases matching "myapp" prefix)
 ```
 
 ### Python API Usage
@@ -148,9 +158,20 @@ Use meaningful names:
 db-name-to-idx-mapper ensure-mapping myapp.cache    # -> 0
 db-name-to-idx-mapper ensure-mapping myapp.sessions # -> 1
 
-# Use with redis-cli (with wrapper script)
+# Use with redis-cli (traditional approach with wrapper script)
 redis-cli -n $(db-name-to-idx-mapper map myapp.cache) SET key value
 redis-cli -n $(db-name-to-idx-mapper map myapp.sessions) GET session:123
+
+# Or use the exec command for cleaner syntax
+db-name-to-idx-mapper exec redis-cli -n myapp.cache SET key value
+db-name-to-idx-mapper exec redis-cli -n myapp.sessions GET session:123
+
+# Execute commands on all databases with a prefix
+db-name-to-idx-mapper exec redis-cli -n myapp FLUSHDB
+
+# Or even create yourself a nice alias:
+alias valkey-cli='db-name-to-idx-mapper exec docker exec -i cache valkey-cli'
+valkey-cli -n myapp.cache SET key value
 ```
 
 ### Django Multiple Databases
@@ -197,6 +218,19 @@ api_port = 8000 + mapper.ensure_mapping("api-gateway")         # 8001
 ### CLI Commands
 
 All CLI commands output parsable results to stdout and descriptive messages to stderr.
+
+#### Command Reference
+
+- **`exec <utility> [args...]`**: Execute a utility command with automatic database index mapping. If a database name is a prefix (matches multiple mappings), the command runs for all matching databases.
+
+Example:
+```bash
+# Single database execution
+db-name-to-idx-mapper exec redis-cli -n myapp.cache GET key
+
+# Multiple database execution (prefix matching)
+db-name-to-idx-mapper exec redis-cli -n myapp KEYS "*"
+```
 
 ## Requirements
 

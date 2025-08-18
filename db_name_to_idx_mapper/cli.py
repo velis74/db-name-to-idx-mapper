@@ -4,7 +4,9 @@ Database name to index mapper - CLI interface
 """
 
 import argparse
+import subprocess
 import sys
+
 from .db_name_to_idx_mapper import DbNameToIdxMapper
 from .config_path import resolve_config_path, get_help_text
 
@@ -59,6 +61,15 @@ def main():
     )
     get_util_parser.add_argument("utility_name", help="Utility name")
 
+    # exec command
+    exec_parser = subparsers.add_parser(
+        "exec",
+        help="Execute utility with mapped database index. if an incomplete db name is given (prefix), runs command for "
+             "all databases matching the prefix (see list-mappings)",
+    )
+    exec_parser.add_argument("utility_name", help="Utility name (e.g., redis-cli)")
+    exec_parser.add_argument("args", nargs=argparse.REMAINDER, help="Utility arguments")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -107,6 +118,32 @@ def main():
         elif args.command == "get-utility-db-param":
             result = mapper.get_utility_db_param(args.utility_name)
             print(result)  # stdout: just the parameter name
+
+        elif args.command == "exec":
+            db_param = mapper.get_utility_db_param(args.utility_name)
+
+            # Find and replace database parameter
+            new_args = []
+            mappings = [0]
+            db_param_index = None
+            i = 0
+            while i < len(args.args):
+                if args.args[i] == db_param and i + 1 < len(args.args):
+                    # Found database parameter, map the next argument
+                    mappings = [mapping["index"] for mapping in mapper.list_mappings(args.args[i + 1])]
+                    new_args.extend([db_param, ""])
+                    db_param_index = len(new_args) - 1
+                    if not mappings:
+                        mappings = [args.args[i + 1]]
+                    i += 2
+                else:
+                    new_args.append(args.args[i])
+                    i += 1
+
+            for mapping in mappings:
+                if db_param_index is not None:
+                    new_args[db_param_index] = mapping
+                subprocess.run([args.utility_name] + new_args)
 
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
