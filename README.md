@@ -79,8 +79,8 @@ from db_name_to_idx_mapper import DbNameToIdxMapper
 mapper = DbNameToIdxMapper()
 
 # Add mappings
-cache_idx = mapper.ensure_mapping("myapp.cache")
-session_idx = mapper.ensure_mapping("myapp.sessions")
+cache_idx = mapper.ensure_mapping("myapp.cache").index
+session_idx = mapper.ensure_mapping("myapp.sessions").index
 
 # Use in your Redis configuration
 CACHES = {
@@ -184,11 +184,11 @@ mapper = DbNameToIdxMapper()
 DATABASES = {
     'users': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': f'app_db_{mapper.ensure_mapping("users")}',
+        'NAME': f'app_db_{mapper.ensure_mapping("users").index}',
     },
     'analytics': {
         'ENGINE': 'django.db.backends.postgresql', 
-        'NAME': f'app_db_{mapper.ensure_mapping("analytics")}',
+        'NAME': f'app_db_{mapper.ensure_mapping("analytics").index}',
     }
 }
 ```
@@ -197,8 +197,8 @@ DATABASES = {
 
 ```python
 # Assign consistent ports to services
-service_port = 8000 + mapper.ensure_mapping("user-service")    # 8000
-api_port = 8000 + mapper.ensure_mapping("api-gateway")         # 8001
+service_port = 8000 + mapper.ensure_mapping("user-service").index    # 8000
+api_port = 8000 + mapper.ensure_mapping("api-gateway").index         # 8001
 ```
 
 ## API Reference
