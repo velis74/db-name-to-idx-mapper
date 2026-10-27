@@ -9,11 +9,14 @@ A cross-platform utility for mapping database names to sequential indices. Origi
 - **CLI and Python API**: Use from command line or import as a Python library
 - **Utility parameter mapping**: Configure database parameters for different CLI tools
 - **Persistent storage**: Mappings are stored in JSON configuration file
+- **Safe for concurrent use**: Processes that add mappings at the same time get distinct indices
 - **Prefix filtering**: List mappings by prefix for organized namespacing
 
 ## Installation
 
 ```bash
+uv add db-name-to-idx-mapper     # as a project dependency
+uv tool install db-name-to-idx-mapper   # CLI only
 pip install db-name-to-idx-mapper
 ```
 
@@ -64,7 +67,7 @@ db-name-to-idx-mapper exec redis-cli -n myapp.cache GET somekey
 # Executes: redis-cli -n 0 GET somekey
 
 # Execute for multiple databases with prefix
-db-name-to-idx-mapper exec redis-cli -n myapp KEYS *
+db-name-to-idx-mapper exec redis-cli -n myapp KEYS '*'
 # Executes: redis-cli -n 0 KEYS *
 #           redis-cli -n 1 KEYS *
 # (for all databases matching "myapp" prefix)
@@ -124,6 +127,10 @@ db-name-to-idx-mapper --config-path "/home/user/my-mappings.json" list-mappings
 **Available aliases:**
 - `{TEMP}`: System temporary directory
 - `{CONFIG}`: System configuration directory
+
+Every process that uses the mapper needs read access to the config file. Adding a mapping additionally needs
+write access to its directory: the file is replaced atomically and writers serialise on `config.json.lock` next
+to it. `ensure_mapping` for an existing name only reads.
 
 ### Config File Format
 
@@ -207,13 +214,14 @@ api_port = 8000 + mapper.ensure_mapping("api-gateway").index         # 8001
 
 #### Methods
 
-- **`add_mapping(name: str) -> int`**: Add new mapping, raises exception if exists
+- **`DbNameToIdxMapper(config_file: str = None)`**: Mapper on `config_file`, default path per platform (see above); creates the config directory if missing
+- **`add_mapping(name: str) -> int`**: Add new mapping, raises `ValueError` if it exists
 - **`ensure_mapping(name: str) -> MappingResult`**: Ensure mapping exists, returns `MappingResult(created: bool, index: int)`
-- **`map(name: str) -> int`**: Get index for name, raises exception if not found
-- **`list_mappings(prefix: str = None) -> List[Dict]`**: List mappings, optionally filtered by prefix
+- **`map(name: str) -> int`**: Get index for name, raises `KeyError` if not found
+- **`list_mappings(prefix: str = None) -> List[Dict]`**: List of `{"name": str, "index": int}` sorted by name; with `prefix`, only names starting with `prefix + "."`
 - **`get_max_mapping_index() -> int`**: Get highest mapping index, returns -1 if no mappings
 - **`add_utility_db_param_map(utility_name: str, param_name: str)`**: Add utility parameter mapping
-- **`get_utility_db_param(utility_name: str) -> str`**: Get utility parameter name
+- **`get_utility_db_param(utility_name: str) -> str`**: Get utility parameter name, `-n` if the utility has none
 
 ### CLI Commands
 
@@ -221,7 +229,7 @@ All CLI commands output parsable results to stdout and descriptive messages to s
 
 #### Command Reference
 
-- **`exec <utility> [args...]`**: Execute a utility command with automatic database index mapping. If a database name is a prefix (matches multiple mappings), the command runs for all matching databases.
+- **`exec <utility> [args...]`**: Execute a utility command with automatic database index mapping. The value after the utility's database parameter (`-n` unless configured with `add-utility-db-param-map`) is replaced: a mapped name by its index, a prefix by each index under it (the command runs once per mapping, see `list-mappings`); any other value is passed unchanged. The exit code is the last non-zero exit code of the runs, 0 if all succeed.
 
 Example:
 ```bash
@@ -234,7 +242,7 @@ db-name-to-idx-mapper exec redis-cli -n myapp KEYS "*"
 
 ## Requirements
 
-- Python 3.7+
+- Python 3.8+
 - No external dependencies
 
 ## License
@@ -244,3 +252,9 @@ MIT License
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+```bash
+uv sync                  # creates .venv with the dev dependency group
+uv run pytest
+uv run ruff check . && uv run ruff format --check .
+```

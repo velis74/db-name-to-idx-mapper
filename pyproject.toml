@@ -1,49 +1,64 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.13.6,<0.14"]
+build-backend = "uv_build"
 
 [project]
 name = "db-name-to-idx-mapper"
 description = "Cross-platform utility for mapping database names to sequential indices"
+version = "1.0.3"
 readme = "README.md"
-requires-python = ">=3.7"
-license = { text = "MIT" }
-dynamic = ["version"]
-authors = [
-    { name = "Velis d.o.o.", email = "support@velis.si" },
-]
+requires-python = ">=3.8"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Jure Erznožnik", email = "jure.erznoznik@gmail.com" }]
+keywords = ["redis", "valkey", "database", "index", "mapping", "cli"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Operating System :: OS Independent",
     "Topic :: Database",
     "Topic :: System :: Systems Administration",
     "Topic :: Utilities",
+    "Typing :: Typed",
 ]
 
 dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "ruff",
+]
 
 [project.urls]
 Homepage = "https://github.com/velis74/db-name-to-idx-mapper"
 Repository = "https://github.com/velis74/db-name-to-idx-mapper"
 "Bug Tracker" = "https://github.com/velis74/db-name-to-idx-mapper/issues"
+Documentation = "https://docs.velis.si/db-name-to-idx-mapper"
 
 [project.scripts]
 db-name-to-idx-mapper = "db_name_to_idx_mapper:main"
 
-[tool.hatch.build.targets.wheel]
-packages = ["db_name_to_idx_mapper"]
+[tool.uv.build-backend]
+module-root = ""
 
-[tool.hatch.version]
-path = "db_name_to_idx_mapper/__init__.py"
+[tool.pytest.ini_options]
+testpaths = ["tests"]
 
 [tool.ruff]
-exclude = [
-    'docs', 'scripts', 'README.md', 'LICENSE', 'MANIFEST.in',
-    'pyproject.toml', '.gitignore', '.git', '.idea', '.ruff'
-]
+exclude = ['*.md', 'docs', 'scripts', '.git', '.idea', '.ruff_cache', '.venv']
 line-length = 120
+target-version = "py38"
 
 [tool.ruff.lint]
 select = ["E4", "E7", "E9", "F", "I"]
@@ -64,3 +79,6 @@ lines-between-types = 1
 combine-as-imports = true
 order-by-type = false
 known-local-folder = []
+
+[tool.publish]
+tests = "pytest"
