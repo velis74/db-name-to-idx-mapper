@@ -79,3 +79,6 @@ lines-between-types = 1
 combine-as-imports = true
 order-by-type = false
 known-local-folder = []
+
+[tool.publish]
+tests = "pytest"
