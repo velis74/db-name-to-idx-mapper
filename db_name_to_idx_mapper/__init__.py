@@ -3,7 +3,7 @@ from importlib.metadata import version
 __title__ = "DB name to idx mapper"
 __version__ = version("db-name-to-idx-mapper")
 __author__ = "Jure Erznožnik"
-__email__ = "jure.erznoznik@gmail.com"
+__email__ = "jure.erznoznik@velis.si"
 __license__ = "MIT"
 __copyright__ = "Copyright 2025-present Jure Erznožnik"
 
