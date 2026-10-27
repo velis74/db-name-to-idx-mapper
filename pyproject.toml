@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
 license-files = ["LICENSE"]
-authors = [{ name = "Jure Erznožnik", email = "jure.erznoznik@gmail.com" }]
+authors = [{ name = "Jure Erznožnik", email = "jure.erznoznik@velis.si" }]
 keywords = ["redis", "valkey", "database", "index", "mapping", "cli"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
