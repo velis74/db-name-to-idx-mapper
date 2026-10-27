@@ -2,9 +2,10 @@
 """
 Config path resolver with cross-platform aliases
 """
+
 import os
-import tempfile
 import platform
+import tempfile
 
 
 def get_system_paths():
@@ -13,9 +14,7 @@ def get_system_paths():
 
     if system == "Windows":
         temp_dir = os.environ.get("TEMP", tempfile.gettempdir())
-        config_dir = os.environ.get(
-            "APPDATA", os.path.expanduser("~\\AppData\\Roaming")
-        )
+        config_dir = os.environ.get("APPDATA", os.path.expanduser("~\\AppData\\Roaming"))
     elif system == "Darwin":  # macOS
         temp_dir = tempfile.gettempdir()
         config_dir = os.path.expanduser("~/Library/Application Support")
@@ -68,4 +67,3 @@ def get_help_text():
     """.replace("\n    ", "\n")
 
     return help_text
-
